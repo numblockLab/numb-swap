@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@abi/*": ["./src/abi/*"],
+      "@menu-items/*": ["./src/menu-items/*"],
+      "@store/*": ["./src/store/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@components/*": ["./src/components/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@adapters/*": ["./src/adapters/*"],
+      "@emiter/*": ["./src/emiter/*"]
+    }
+  }
+}
