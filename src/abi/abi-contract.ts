@@ -291,5 +291,3 @@ export const numbBrigdeContractAbi = [
     type: "function",
   },
 ];
-
-export const numbUsdContractAddress = "0x1d3B29a5A9f790f22b57527493d28EF570ef4976";
