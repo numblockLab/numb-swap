@@ -9,10 +9,11 @@ export interface ITokenChainInfo {
 export function getEtherTokenSymbol(): string {
   return "NUMB";
 }
+export const NUMB_ADDRESS = "0x4078cB020cf693156E4A51DA0432d5d262dd6882";
 
-export const TOKEN_INFOS: { [tokenAddress: string]: ITokenChainInfo } = {
-  "0xe11BeA6a30c452a504b5ccC727e77Cf05Cb4997d": {
-    address: "0xe11BeA6a30c452a504b5ccC727e77Cf05Cb4997d",
+export const ALL_TOKEN_INFOS: { [tokenAddress: string]: ITokenChainInfo } = {
+  [NUMB_ADDRESS]: {
+    address: NUMB_ADDRESS,
     symbol: "NUMB",
     imgUrl: "image2vector_2.svg",
   },

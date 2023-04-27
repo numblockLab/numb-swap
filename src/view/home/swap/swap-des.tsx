@@ -1,4 +1,4 @@
-import { ITokenChainInfo, TOKEN_INFOS } from "@abi/tokenAddress";
+import { ITokenChainInfo, ALL_TOKEN_INFOS } from "@abi/tokenAddress";
 import InputSelectDefault from "@components/InputSelectDefault";
 import InputSelectWithIcon from "@components/InputSelectWithIcon";
 import SwapModalWrapper from "@components/SwapModalWrapper";
@@ -23,7 +23,7 @@ function SwapSourceTokenBtn() {
     handleClose();
   };
   const chainIconinfo = useMemo(() => {
-    return Object.values(TOKEN_INFOS);
+    return Object.values(ALL_TOKEN_INFOS);
   }, []);
 
   return (
