@@ -6,24 +6,16 @@ export default function SwapEstimateRate() {
   const swapData = useAppSelector(getSwapSelector);
 
   const estimateData = useMemo(() => {
-    if (swapData.source.selectedChainId > 0 && swapData.source.selectedToken) {
-      if (swapData.destination.selectedChainId > 0 && swapData.destination.selectedToken) {
-        return {
-          sourceToken: swapData.source.selectedToken.symbol,
-          desToken: swapData.destination.selectedToken.symbol,
-          sourceVal: swapData.source.tokenSwapValue === "" ? 0 : swapData.source.tokenSwapValue,
-          desVal: swapData.source.tokenSwapValue === "" ? 0 : swapData.source.tokenSwapValue,
-        };
-      }
+    if (swapData.destination.selectedToken && swapData.source.selectedToken) {
+      return {
+        sourceToken: swapData.source.selectedToken.symbol,
+        desToken: swapData.destination.selectedToken.symbol,
+        sourceVal: swapData.source.tokenSwapValue === "" ? 0 : swapData.source.tokenSwapValue,
+        desVal: swapData.source.tokenSwapValue === "" ? 0 : swapData.source.tokenSwapValue,
+      };
     }
     return null;
-  }, [
-    swapData.destination.selectedChainId,
-    swapData.destination.selectedToken,
-    swapData.source.selectedChainId,
-    swapData.source.selectedToken,
-    swapData.source.tokenSwapValue,
-  ]);
+  }, [swapData.destination.selectedToken, swapData.source.selectedToken, swapData.source.tokenSwapValue]);
   return (
     estimateData && (
       <div className="css-16jc9eg e1sncen30">

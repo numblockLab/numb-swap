@@ -7,10 +7,8 @@ export default function SwapSwitchIndent() {
   const dispatch = useAppDispatch();
 
   const onSwapSwitch = () => {
-    if (swapData.source.selectedChainId > 0 && swapData.source.selectedToken) {
-      if (swapData.destination.selectedChainId > 0 && swapData.destination.selectedToken) {
-        dispatch(switchSourceDes());
-      }
+    if (swapData.source.selectedToken && swapData.destination.selectedToken) {
+      dispatch(switchSourceDes());
     }
   };
   return (

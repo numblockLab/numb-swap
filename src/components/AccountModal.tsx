@@ -13,7 +13,7 @@ type Props = {
 
 export default function AccountModal(props: Props) {
   const { isOpen, onClose } = props;
-  const { account, deactivate, chainId } = useEthers();
+  const { account, deactivate } = useEthers();
   const etherBalance = useEtherBalance(account);
   // const daiBalance = useTokenBalance(FIG_ADDRESS, account);
   function handleDeactivateAccount() {
@@ -150,7 +150,7 @@ export default function AccountModal(props: Props) {
                       </div>
                       <div className="iekbcc0 ju367v2n">
                         <h1 className="iekbcc0 ju367vg3 ju367v11 ju367v14 ju367v1b ju367v2o">
-                          {formatEther(etherBalance || 0)} {getEtherTokenSymbol(chainId || 0)}
+                          {formatEther(etherBalance || 0)} {getEtherTokenSymbol()}
                         </h1>
                       </div>
                     </div>

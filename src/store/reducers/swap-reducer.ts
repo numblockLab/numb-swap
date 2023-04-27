@@ -13,7 +13,6 @@ import {
 import { ISwapModel, ISwapSelectedValue } from "@store/models/swap-model";
 
 const defaultInput: ISwapSelectedValue = {
-  selectedChainId: 0,
   selectedToken: null,
   tokenSwapValue: "",
 };
@@ -30,7 +29,6 @@ const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
     return initialSwapState;
   });
   builder.addCase(selectSourceChainIdAction, (state, action) => {
-    state.source.selectedChainId = action.payload;
     state.source.selectedToken = null;
     return state;
   });
@@ -43,7 +41,6 @@ const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
     return state;
   });
   builder.addCase(selectDesChainIdAction, (state, action) => {
-    state.destination.selectedChainId = action.payload;
     state.destination.selectedToken = null;
     return state;
   });

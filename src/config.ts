@@ -1,16 +1,12 @@
-import { ChainId, Config, DEFAULT_SUPPORTED_CHAINS } from "@usedapp/core";
+import { Config, DEFAULT_SUPPORTED_CHAINS } from "@usedapp/core";
 
-import { NUMB_CHAIN_COST as FIG_CHAIN } from "./abi/constants";
+import { NUMB_CHAIN_COST } from "./abi/constants";
 
-export { FIG_CHAIN };
+export { NUMB_CHAIN_COST };
 
 const configCustomChain: Config = {
-  // readOnlyChainId: FIG_CHAIN.chainId,
-  readOnlyUrls: {
-    [FIG_CHAIN.chainId]: FIG_CHAIN.rpcUrl,
-    [ChainId.BSCTestnet]: "https://data-seed-prebsc-1-s3.binance.org:8545",
-  },
-  networks: [...DEFAULT_SUPPORTED_CHAINS, FIG_CHAIN],
+  readOnlyChainId: NUMB_CHAIN_COST.chainId,
+  networks: [...DEFAULT_SUPPORTED_CHAINS, NUMB_CHAIN_COST],
 };
 
 // IMPORTANT: Fill that object with your own data.

@@ -1,72 +1,14 @@
-import { ITokenChainInfo } from "@abi/tokenAddress";
+import { ITokenChainInfo, TOKEN_INFOS } from "@abi/tokenAddress";
 import InputSelectDefault from "@components/InputSelectDefault";
 import InputSelectWithIcon from "@components/InputSelectWithIcon";
 import SwapModalWrapper from "@components/SwapModalWrapper";
 import { ChainIconItem } from "@components/chain-icon/chain-icon-modal";
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
-import { selectDesChainIdAction, selectDesTokenAction } from "@store/actions";
-import { getDesSelector, getDesTokenSelector, getSwapSelector } from "@store/selector/swap-selectors";
-import { CHAIN_ICON_INFO, getChainIconInfo, getTokenListByChain } from "@utils/index";
+import { selectDesTokenAction } from "@store/actions";
+import { getDesTokenSelector, getSwapSelector } from "@store/selector/swap-selectors";
 import { useMemo, useState } from "react";
 
-function SwapDesChainBtn(props: { selectedChainId: number }) {
-  const { selectedChainId } = props;
-  const dispatch = useAppDispatch();
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-
-  const onHandleOpen = () => {
-    setShow(true);
-  };
-  const onSelectChainId = (chainId: number) => {
-    dispatch(selectDesChainIdAction(chainId));
-    handleClose();
-  };
-  const chainIconinfo = useMemo(() => {
-    if (selectedChainId > 0) {
-      return {
-        chain: getChainIconInfo(selectedChainId),
-        // chainTokenList: getTokenListByChain(selectedChainId),
-      };
-    }
-    return null;
-  }, [selectedChainId]);
-
-  return (
-    <>
-      {chainIconinfo ? (
-        <InputSelectWithIcon
-          title={chainIconinfo.chain.name}
-          imgUrl={chainIconinfo.chain.iconPath}
-          onClickHanlder={onHandleOpen}
-        />
-      ) : (
-        <InputSelectDefault title="Select Network" onClickHanlder={onHandleOpen} />
-      )}
-      <SwapModalWrapper
-        title="Select Network"
-        description="What network do you want to send assets from?"
-        isOpen={show}
-        onClose={handleClose}
-      >
-        <div className="css-gj7b5f eu2qphv1">
-          {Object.values(CHAIN_ICON_INFO).map((item) => (
-            <ChainIconItem
-              key={item.chainId}
-              title={item.name}
-              onHandleClick={() => onSelectChainId(item.chainId)}
-              iconUrl={item.iconPath}
-            />
-          ))}
-        </div>
-      </SwapModalWrapper>
-    </>
-  );
-}
-
-function SwapSourceTokenBtn(props: { selectedChainId: number }) {
-  const { selectedChainId } = props;
+function SwapSourceTokenBtn() {
   const currentTokeninfo = useAppSelector(getDesTokenSelector);
   const dispatch = useAppDispatch();
   const [show, setShow] = useState(false);
@@ -81,11 +23,8 @@ function SwapSourceTokenBtn(props: { selectedChainId: number }) {
     handleClose();
   };
   const chainIconinfo = useMemo(() => {
-    if (selectedChainId > 0) {
-      return getTokenListByChain(selectedChainId);
-    }
-    return null;
-  }, [selectedChainId]);
+    return Object.values(TOKEN_INFOS);
+  }, []);
 
   return (
     <>
@@ -126,23 +65,14 @@ function SwapSourceTokenBtn(props: { selectedChainId: number }) {
 }
 
 export default function SwapDes() {
-  const desSwapinfo = useAppSelector(getDesSelector);
   const swapData = useAppSelector(getSwapSelector);
 
   const estimateDesData = useMemo(() => {
-    if (swapData.source.selectedChainId > 0 && swapData.source.selectedToken) {
-      if (swapData.destination.selectedChainId > 0 && swapData.destination.selectedToken) {
-        return swapData.source.tokenSwapValue;
-      }
+    if (swapData.destination.selectedToken && swapData.source.selectedToken) {
+      return swapData.source.tokenSwapValue;
     }
     return "";
-  }, [
-    swapData.destination.selectedChainId,
-    swapData.destination.selectedToken,
-    swapData.source.selectedChainId,
-    swapData.source.selectedToken,
-    swapData.source.tokenSwapValue,
-  ]);
+  }, [swapData.destination.selectedToken, swapData.source.selectedToken, swapData.source.tokenSwapValue]);
   return (
     <div className="rounded-t css-1nestwu ec4inb73">
       <div className="flex items-center justify-between">
@@ -157,8 +87,7 @@ export default function SwapDes() {
           value={estimateDesData}
         />
         <div className="css-4plb0w ec4inb71">
-          <SwapDesChainBtn selectedChainId={desSwapinfo.selectedChainId} />
-          <SwapSourceTokenBtn selectedChainId={desSwapinfo.selectedChainId} />
+          <SwapSourceTokenBtn />
         </div>
       </div>
     </div>

@@ -1,83 +1,20 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import { ITokenChainInfo } from "@abi/tokenAddress";
+import { NUMB_CHAIN_COST } from "@abi/constants";
+import { ITokenChainInfo, TOKEN_INFOS } from "@abi/tokenAddress";
 import InputSelectDefault from "@components/InputSelectDefault";
 import InputSelectWithIcon from "@components/InputSelectWithIcon";
 import SwapModalWrapper from "@components/SwapModalWrapper";
 import { ChainIconItem } from "@components/chain-icon/chain-icon-modal";
-import { notifyMessageSuccess } from "@emiter/AppEmitter";
 import { formatEther } from "@ethersproject/units";
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
 import { Dispatch } from "@reduxjs/toolkit";
-import {
-  CombineActionTypes,
-  putSourceTokenSwapValueAction,
-  selectSourceChainIdAction,
-  selectSourceTokenAction,
-} from "@store/actions";
+import { CombineActionTypes, putSourceTokenSwapValueAction, selectSourceTokenAction } from "@store/actions";
 import { ISelectedToken } from "@store/models/swap-model";
 import { getSourceSelector, getSourceTokenSelector, getSourceTokenValueSelector } from "@store/selector/swap-selectors";
 import { useEthers, useTokenBalance } from "@usedapp/core";
-import { CHAIN_ICON_INFO, getChainIconInfo, getTokenListByChain } from "@utils/index";
 import { useMemo, useState } from "react";
 
-function SwapSourceChainBtn(props: { selectedChainId: number }) {
-  const { selectedChainId } = props;
-  const dispatch = useAppDispatch();
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-
-  const onHandleOpen = () => {
-    setShow(true);
-  };
-  const onSelectChainId = (chainId: number) => {
-    dispatch(selectSourceChainIdAction(chainId));
-    handleClose();
-  };
-  const chainIconinfo = useMemo(() => {
-    if (selectedChainId > 0) {
-      return {
-        chain: getChainIconInfo(selectedChainId),
-        // chainTokenList: getTokenListByChain(selectedChainId),
-      };
-    }
-    return null;
-  }, [selectedChainId]);
-
-  return (
-    <>
-      {chainIconinfo ? (
-        <InputSelectWithIcon
-          title={chainIconinfo.chain.name}
-          imgUrl={chainIconinfo.chain.iconPath}
-          onClickHanlder={onHandleOpen}
-        />
-      ) : (
-        <InputSelectDefault title="Select Network" onClickHanlder={onHandleOpen} />
-      )}
-      <SwapModalWrapper
-        title="Select Network"
-        description="What network do you want to send assets from?"
-        isOpen={show}
-        onClose={handleClose}
-      >
-        <div className="css-gj7b5f eu2qphv1">
-          {Object.values(CHAIN_ICON_INFO).map((item) => (
-            <ChainIconItem
-              key={item.chainId}
-              title={item.name}
-              onHandleClick={() => onSelectChainId(item.chainId)}
-              iconUrl={item.iconPath}
-            />
-          ))}
-        </div>
-      </SwapModalWrapper>
-    </>
-  );
-}
-
-function SwapSourceTokenBtn(props: { selectedChainId: number }) {
-  const { selectedChainId } = props;
+function SwapSourceTokenBtn() {
   const currentTokeninfo = useAppSelector(getSourceTokenSelector);
   const dispatch = useAppDispatch();
   const [show, setShow] = useState(false);
@@ -92,11 +29,8 @@ function SwapSourceTokenBtn(props: { selectedChainId: number }) {
     handleClose();
   };
   const chainIconinfo = useMemo(() => {
-    if (selectedChainId > 0) {
-      return getTokenListByChain(selectedChainId);
-    }
-    return null;
-  }, [selectedChainId]);
+    return Object.values(TOKEN_INFOS);
+  }, []);
 
   return (
     <>
@@ -136,14 +70,10 @@ function SwapSourceTokenBtn(props: { selectedChainId: number }) {
   );
 }
 
-function SourceWalletbalance(props: {
-  selectedChainId: number;
-  selectedToken: ISelectedToken;
-  dispatch: Dispatch<CombineActionTypes>;
-}) {
-  const { selectedChainId, selectedToken, dispatch } = props;
+function SourceWalletbalance(props: { selectedToken: ISelectedToken; dispatch: Dispatch<CombineActionTypes> }) {
+  const { selectedToken, dispatch } = props;
   const { account } = useEthers();
-  const tokenBalance = useTokenBalance(selectedToken.address, account, { chainId: selectedChainId });
+  const tokenBalance = useTokenBalance(selectedToken.address, account, { chainId: NUMB_CHAIN_COST.chainId });
   const filMaxToSource = () => {
     // notifyMessageSuccess("0xabb94c5d57feb649d7815115c3b21d457261a165e4b815550c9e509b3624f150");
     dispatch(putSourceTokenSwapValueAction(formatEther(tokenBalance || 0) || ""));
@@ -176,12 +106,8 @@ export default function SwapSource() {
     <div className="rounded-t css-1nestwu ec4inb73">
       <div className="flex items-center justify-between">
         <p className="MuiTypography-root MuiTypography-body1 css-i3l18a">Swap from:</p>
-        {sourceSwapinfo.selectedChainId > 0 && sourceSwapinfo.selectedToken && (
-          <SourceWalletbalance
-            selectedChainId={sourceSwapinfo.selectedChainId}
-            selectedToken={sourceSwapinfo.selectedToken}
-            dispatch={dispatch}
-          />
+        {sourceSwapinfo.selectedToken && (
+          <SourceWalletbalance selectedToken={sourceSwapinfo.selectedToken} dispatch={dispatch} />
         )}
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
@@ -193,8 +119,8 @@ export default function SwapSource() {
           value={sourceSwapValue}
         />
         <div className="css-4plb0w ec4inb71">
-          <SwapSourceChainBtn selectedChainId={sourceSwapinfo.selectedChainId} />
-          <SwapSourceTokenBtn selectedChainId={sourceSwapinfo.selectedChainId} />
+          {/* <SwapSourceChainBtn selectedChainId={sourceSwapinfo.selectedChainId} /> */}
+          <SwapSourceTokenBtn />
         </div>
       </div>
     </div>

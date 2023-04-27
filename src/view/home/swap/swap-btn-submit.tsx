@@ -3,18 +3,11 @@
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
 import { getSwapSelector } from "@store/selector/swap-selectors";
 import { useEthers, useTokenBalance } from "@usedapp/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { BRIDGE_WALLET_ADDRESS } from "@abi/index";
-import { TOKEN_CHAIN_CONTRACT } from "@abi/tokenAddress";
-import { notifyMessageError, notifyMessageSuccess } from "@emiter/AppEmitter";
-import { formatEther } from "@ethersproject/units";
-import useBridgeContract from "@hooks/useBrigdeContract";
+import { NUMB_CHAIN_COST } from "@abi/index";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { putSourceTokenSwapValueAction } from "@store/actions";
 import { ISelectedToken } from "@store/models/swap-model";
-import { getChainIconInfo } from "@utils/index";
-import { ethers } from "ethers";
 
 function BtnLoading({ title }: { title: string }) {
   return (
@@ -46,23 +39,20 @@ function BtnSubmitDisable({ title }: { title: string }) {
 function BtnSubmitSwap(props: {
   title: string;
   sourceDataToken: ISelectedToken;
-  selectedChainId: number;
   sourceTokenValue: number;
   onHandleSetBtnState: (status: number) => void;
 }) {
-  const { title, sourceDataToken, selectedChainId, onHandleSetBtnState, sourceTokenValue } = props;
+  const { title, sourceDataToken, onHandleSetBtnState, sourceTokenValue } = props;
   const dispatch = useAppDispatch();
   const { account, chainId, switchNetwork } = useEthers();
-  const tokenBalance = useTokenBalance(sourceDataToken.address, account, { chainId: selectedChainId });
-  const chainIconinfo = useMemo(() => {
-    return getChainIconInfo(selectedChainId);
-  }, [selectedChainId]);
+  const tokenBalance = useTokenBalance(sourceDataToken.address, account, { chainId: NUMB_CHAIN_COST.chainId });
+  // const chainIconinfo = useMemo(() => {
+  //   return getChainIconInfo(selectedChainId);
+  // }, [selectedChainId]);
 
-  const bridgeContract = useMemo(() => {
-    return TOKEN_CHAIN_CONTRACT[selectedChainId][sourceDataToken.address].contract;
-  }, [selectedChainId, sourceDataToken.address]);
-
-  const { state: contractState, send: sendTx } = useBridgeContract(bridgeContract);
+  // const bridgeContract = useMemo(() => {
+  //   return TOKEN_CHAIN_CONTRACT[selectedChainId][sourceDataToken.address].contract;
+  // }, [selectedChainId, sourceDataToken.address]);
 
   // useEffect(() => {
   //   console.log("🚀 ~ file: swap-btn-submit.tsx:69 ~ useEffect ~ contractState:", contractState);
@@ -81,28 +71,28 @@ function BtnSubmitSwap(props: {
   // }, [contractState]);
 
   const onHandleSwap = () => {
-    if (chainId !== selectedChainId) {
-      switchNetwork(selectedChainId).then();
-    } else {
-      const currentBal = Number(formatEther(tokenBalance || 0));
-      if (currentBal >= sourceTokenValue || currentBal === 0) {
-        onHandleSetBtnState(2);
-        const amountFormatted = ethers.utils.parseUnits(`${sourceTokenValue}`, 18);
-        sendTx(BRIDGE_WALLET_ADDRESS, amountFormatted.toString())
-          .then((result) => {
-            if (result) {
-              notifyMessageSuccess(result.transactionHash);
-              dispatch(putSourceTokenSwapValueAction(""));
-            }
-          })
-          .catch(() => {
-            onHandleSetBtnState(3);
-            notifyMessageError("Error! Please try again!");
-          });
-      } else {
-        notifyMessageError("Insufficient funds!");
-      }
-    }
+    // if (chainId !== selectedChainId) {
+    //   switchNetwork(selectedChainId).then();
+    // } else {
+    //   const currentBal = Number(formatEther(tokenBalance || 0));
+    //   if (currentBal >= sourceTokenValue || currentBal === 0) {
+    //     onHandleSetBtnState(2);
+    //     const amountFormatted = ethers.utils.parseUnits(`${sourceTokenValue}`, 18);
+    //     // sendTx(BRIDGE_WALLET_ADDRESS, amountFormatted.toString())
+    //     //   .then((result) => {
+    //     //     if (result) {
+    //     //       notifyMessageSuccess(result.transactionHash);
+    //     //       dispatch(putSourceTokenSwapValueAction(""));
+    //     //     }
+    //     //   })
+    //     //   .catch(() => {
+    //     //     onHandleSetBtnState(3);
+    //     //     notifyMessageError("Error! Please try again!");
+    //     //   });
+    //   } else {
+    //     notifyMessageError("Insufficient funds!");
+    //   }
+    // }
   };
   return (
     <button
@@ -111,7 +101,7 @@ function BtnSubmitSwap(props: {
       className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiTypography-root MuiTypography-button e18czh0v0 css-18mk15y"
       tabIndex={0}
     >
-      {chainId !== selectedChainId ? `Switch to ${chainIconinfo.name} to Swap` : title}
+      {chainId !== NUMB_CHAIN_COST.chainId ? `Switch to ${NUMB_CHAIN_COST.chainName} to Swap` : title}
     </button>
   );
 }
@@ -132,17 +122,7 @@ export default function SwapBtnSubmit() {
     } else {
       setBtnState(1);
     }
-    if (swapData.source.selectedChainId === swapData.destination.selectedChainId) {
-      setBtnState(1);
-    }
-  }, [
-    account,
-    swapData.destination.selectedChainId,
-    swapData.destination.selectedToken,
-    swapData.source.selectedChainId,
-    swapData.source.selectedToken,
-    swapData.source.tokenSwapValue,
-  ]);
+  }, [account, swapData.destination.selectedToken, swapData.source.selectedToken, swapData.source.tokenSwapValue]);
   // const btnState: number = 2;
   const onHandleSetBtnState = (status: number) => {
     setBtnState(status);
@@ -164,7 +144,6 @@ export default function SwapBtnSubmit() {
       {btnState === 3 && swapData.source.selectedToken && (
         <BtnSubmitSwap
           onHandleSetBtnState={onHandleSetBtnState}
-          selectedChainId={swapData.source.selectedChainId}
           sourceDataToken={swapData.source.selectedToken}
           sourceTokenValue={Number(swapData.source.tokenSwapValue)}
           title="Swap"

@@ -5,7 +5,6 @@ export interface ISelectedToken {
 }
 
 export interface ISwapSelectedValue {
-  selectedChainId: number;
   selectedToken: ISelectedToken | null;
   tokenSwapValue: number | string;
 }
