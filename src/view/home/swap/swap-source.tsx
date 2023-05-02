@@ -11,7 +11,7 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { CombineActionTypes, putSourceTokenSwapValueAction, selectSourceTokenAction } from "@store/actions";
 import { ISelectedToken } from "@store/models/swap-model";
 import { getSourceSelector, getSourceTokenSelector, getSourceTokenValueSelector } from "@store/selector/swap-selectors";
-import { useEthers, useTokenBalance } from "@usedapp/core";
+import { useEtherBalance, useEthers, useTokenBalance } from "@usedapp/core";
 import { useMemo, useState } from "react";
 
 function SwapSourceTokenBtn() {
@@ -73,15 +73,17 @@ function SwapSourceTokenBtn() {
 function SourceWalletbalance(props: { selectedToken: ISelectedToken; dispatch: Dispatch<CombineActionTypes> }) {
   const { selectedToken, dispatch } = props;
   const { account } = useEthers();
+  const etherBalance = useEtherBalance(account);
   const tokenBalance = useTokenBalance(selectedToken.address, account, { chainId: NUMB_CHAIN_COST.chainId });
   const filMaxToSource = () => {
-    // notifyMessageSuccess("0xabb94c5d57feb649d7815115c3b21d457261a165e4b815550c9e509b3624f150");
-    dispatch(putSourceTokenSwapValueAction(formatEther(tokenBalance || 0) || ""));
+    dispatch(
+      putSourceTokenSwapValueAction(formatEther((selectedToken.isEther ? etherBalance : tokenBalance) || 0) || ""),
+    );
   };
   return (
     <div className="flex items-center">
       <p className="MuiTypography-root MuiTypography-caption text-grey-300 dark:text-grey-400 flex items-center tracking-[-0.03em] css-m1yo1i">
-        Balance: {formatEther(tokenBalance || 0)} {selectedToken.symbol}
+        Balance: {formatEther((selectedToken.isEther ? etherBalance : tokenBalance) || 0)} {selectedToken.symbol}
         <span className="ml-1 mr-1">|</span>
       </p>
       <p
@@ -119,7 +121,6 @@ export default function SwapSource() {
           value={sourceSwapValue}
         />
         <div className="css-4plb0w ec4inb71">
-          {/* <SwapSourceChainBtn selectedChainId={sourceSwapinfo.selectedChainId} /> */}
           <SwapSourceTokenBtn />
         </div>
       </div>

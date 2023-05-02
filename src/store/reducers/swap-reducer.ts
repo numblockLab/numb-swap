@@ -1,16 +1,16 @@
 import { createReducer } from "@reduxjs/toolkit";
+import { ISwapModel, ISwapSelectedValue } from "@store/models/swap-model";
 import {
   putDesTokenSwapValueAction,
   putSourceTokenSwapValueAction,
-  selectDesChainIdAction,
   selectDesTokenAction,
-  selectSourceChainIdAction,
   selectSourceTokenAction,
   setDefaultSwap,
   switchSourceDes,
   updateSwapAction,
 } from "../actions/swap-action";
-import { ISwapModel, ISwapSelectedValue } from "@store/models/swap-model";
+import { ITokenSwapMappingItem, TOKEN_SWAP_MAPPING } from "@abi/tokenAddress";
+import { find } from "lodash";
 
 const defaultInput: ISwapSelectedValue = {
   selectedToken: null,
@@ -19,6 +19,8 @@ const defaultInput: ISwapSelectedValue = {
 export const initialSwapState: ISwapModel = {
   source: defaultInput,
   destination: defaultInput,
+  swapContractAddress: null,
+  estimateValue: "",
 };
 
 const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
@@ -28,24 +30,29 @@ const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
   builder.addCase(setDefaultSwap, () => {
     return initialSwapState;
   });
-  builder.addCase(selectSourceChainIdAction, (state, action) => {
-    state.source.selectedToken = null;
-    return state;
-  });
+
   builder.addCase(selectSourceTokenAction, (state, action) => {
     state.source.selectedToken = action.payload;
+    state.destination.selectedToken = null;
+    state.swapContractAddress = null;
     return state;
   });
   builder.addCase(putSourceTokenSwapValueAction, (state, action) => {
     state.source.tokenSwapValue = action.payload;
     return state;
   });
-  builder.addCase(selectDesChainIdAction, (state, action) => {
-    state.destination.selectedToken = null;
-    return state;
-  });
+
   builder.addCase(selectDesTokenAction, (state, action) => {
     state.destination.selectedToken = action.payload;
+    if (state.source.selectedToken) {
+      const tokenMapping = TOKEN_SWAP_MAPPING[state.source.selectedToken.address];
+      const contractItem = find(tokenMapping, (e: ITokenSwapMappingItem) => {
+        return e.address === action.payload.address;
+      });
+      if (contractItem) {
+        state.swapContractAddress = contractItem.swapContract;
+      }
+    }
     return state;
   });
   builder.addCase(putDesTokenSwapValueAction, (state, action) => {
@@ -55,6 +62,8 @@ const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
   builder.addCase(switchSourceDes, (state) => {
     const tmp = { ...state.source };
     state.source = state.destination;
+    state.source.tokenSwapValue = state.estimateValue;
+    state.estimateValue = "";
     state.destination = tmp;
     return state;
   });

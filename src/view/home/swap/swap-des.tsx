@@ -1,15 +1,26 @@
-import { ITokenChainInfo, ALL_TOKEN_INFOS } from "@abi/tokenAddress";
+import { ITokenChainInfo, TOKEN_SWAP_MAPPING } from "@abi/tokenAddress";
 import InputSelectDefault from "@components/InputSelectDefault";
 import InputSelectWithIcon from "@components/InputSelectWithIcon";
 import SwapModalWrapper from "@components/SwapModalWrapper";
 import { ChainIconItem } from "@components/chain-icon/chain-icon-modal";
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
-import { selectDesTokenAction } from "@store/actions";
-import { getDesTokenSelector, getSwapSelector } from "@store/selector/swap-selectors";
-import { useMemo, useState } from "react";
+import { getAmountOfTokensReceivedFromSwap, useTokenBalanceAndReserve } from "@hooks/useSwap";
+import { selectDesTokenAction, updateSwapAction } from "@store/actions";
+import { ISelectedToken } from "@store/models/swap-model";
+import {
+  getDesTokenSelector,
+  getEstimateValueSelector,
+  getSourceTokenSelector,
+  getSwapSelector,
+} from "@store/selector/swap-selectors";
+import { useEthers } from "@usedapp/core";
+import { utils } from "ethers";
+import { debounce } from "lodash";
+import { useEffect, useMemo, useState } from "react";
 
 function SwapSourceTokenBtn() {
-  const currentTokeninfo = useAppSelector(getDesTokenSelector);
+  const sourceSelected: ISelectedToken | null = useAppSelector(getSourceTokenSelector);
+  const desTokeninfo = useAppSelector(getDesTokenSelector);
   const dispatch = useAppDispatch();
   const [show, setShow] = useState(false);
 
@@ -23,17 +34,17 @@ function SwapSourceTokenBtn() {
     handleClose();
   };
   const chainIconinfo = useMemo(() => {
-    return Object.values(ALL_TOKEN_INFOS);
-  }, []);
+    if (sourceSelected) {
+      const tokenMapping = TOKEN_SWAP_MAPPING[sourceSelected.address];
+      return tokenMapping;
+    }
+    return null;
+  }, [sourceSelected]);
 
   return (
     <>
-      {currentTokeninfo ? (
-        <InputSelectWithIcon
-          title={currentTokeninfo.symbol}
-          imgUrl={currentTokeninfo.imgUrl}
-          onClickHanlder={onHandleOpen}
-        />
+      {desTokeninfo ? (
+        <InputSelectWithIcon title={desTokeninfo.symbol} imgUrl={desTokeninfo.imgUrl} onClickHanlder={onHandleOpen} />
       ) : (
         <InputSelectDefault
           title="Select Token"
@@ -43,7 +54,7 @@ function SwapSourceTokenBtn() {
       )}
       <SwapModalWrapper
         title="Select Token"
-        description="What asset do you want to send?"
+        description="What asset do you want to receive?"
         isOpen={show}
         onClose={handleClose}
       >
@@ -64,28 +75,124 @@ function SwapSourceTokenBtn() {
   );
 }
 
+function InputDesEstimate(props: {
+  swapContractAddress: string;
+  sourceSelectedToken: ISelectedToken;
+  contractBal: string;
+  contractRev: string;
+  tokenSwapValue: number | string;
+}) {
+  const { sourceSelectedToken, swapContractAddress, contractBal, contractRev, tokenSwapValue } = props;
+  const dispatch = useAppDispatch();
+  const { library } = useEthers();
+  const estimateVal = useAppSelector(getEstimateValueSelector);
+  const debouncedSearch = debounce(
+    async (params: {
+      _swapContractAddress: string;
+      _swapAmountWei: string;
+      provider: any;
+      ethSelected: boolean;
+      ethBalance: string;
+      reservedCD: string;
+    }) => {
+      const amountOfTokens = await getAmountOfTokensReceivedFromSwap(
+        params._swapContractAddress,
+        params._swapAmountWei,
+        params.provider,
+        params.ethSelected,
+        params.ethBalance,
+        params.reservedCD,
+        true,
+      );
+      dispatch(
+        updateSwapAction({
+          estimateValue: amountOfTokens,
+        }),
+      );
+    },
+    1000,
+  );
+  useEffect(() => {
+    if (Number(tokenSwapValue) > 0) {
+      const _swapAmountWEI = utils.parseEther(tokenSwapValue.toString());
+      const params = {
+        _swapContractAddress: swapContractAddress,
+        _swapAmountWei: _swapAmountWEI.toString(),
+        provider: library,
+        ethSelected: sourceSelectedToken.isEther,
+        ethBalance: contractBal,
+        reservedCD: contractRev,
+      };
+      debouncedSearch(params)?.then();
+    } else {
+      dispatch(
+        updateSwapAction({
+          estimateValue: "",
+        }),
+      );
+    }
+    return () => {
+      debouncedSearch.cancel();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractBal, contractRev, sourceSelectedToken.isEther, swapContractAddress, tokenSwapValue]);
+  return (
+    <input
+      type="number"
+      className="sm:text-left text-right ec4inb72 css-1aao2o7 e15splxn0"
+      placeholder="0.00"
+      disabled
+      value={estimateVal}
+    />
+  );
+}
+
 export default function SwapDes() {
   const swapData = useAppSelector(getSwapSelector);
-
-  const estimateDesData = useMemo(() => {
-    if (swapData.destination.selectedToken && swapData.source.selectedToken) {
-      return swapData.source.tokenSwapValue;
+  const balanceAndReserve = useTokenBalanceAndReserve(swapData.swapContractAddress);
+  const [state, setState] = useState({
+    bal: "0",
+    rev: "0",
+  });
+  useEffect(() => {
+    if (balanceAndReserve) {
+      const [balance, reserve] = balanceAndReserve;
+      if (balance && reserve) {
+        const balStr = balance.toString();
+        const revStr = reserve.toString();
+        if (balStr !== state.bal && revStr !== state.rev) {
+          setState({ bal: balStr, rev: revStr });
+        }
+      }
     }
-    return "";
-  }, [swapData.destination.selectedToken, swapData.source.selectedToken, swapData.source.tokenSwapValue]);
+  }, [balanceAndReserve, state]);
+
+  // useEffect(() => {
+  //   console.log("🚀 ~ file: swap-des.tsx:89 ~ SwapDes ~ state:", state);
+  // }, [state]);
+
   return (
     <div className="rounded-t css-1nestwu ec4inb73">
       <div className="flex items-center justify-between">
         <p className="MuiTypography-root MuiTypography-body1 css-i3l18a">Receive:</p>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
-        <input
-          type="number"
-          className="sm:text-left text-right ec4inb72 css-1aao2o7 e15splxn0"
-          placeholder="0.00"
-          disabled
-          value={estimateDesData}
-        />
+        {swapData.swapContractAddress && swapData.source.selectedToken ? (
+          <InputDesEstimate
+            swapContractAddress={swapData.swapContractAddress}
+            sourceSelectedToken={swapData.source.selectedToken}
+            contractBal={state.bal}
+            contractRev={state.rev}
+            tokenSwapValue={swapData.source.tokenSwapValue}
+          />
+        ) : (
+          <input
+            type="number"
+            className="sm:text-left text-right ec4inb72 css-1aao2o7 e15splxn0"
+            placeholder="0.00"
+            disabled
+          />
+        )}
         <div className="css-4plb0w ec4inb71">
           <SwapSourceTokenBtn />
         </div>

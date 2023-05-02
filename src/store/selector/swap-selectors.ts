@@ -11,3 +11,4 @@ export const getDesTokenSelector = (state: RootStateType): ISelectedToken | null
   state.swap.destination.selectedToken;
 export const getDesTokenValueSelector = (state: RootStateType): string | number =>
   state.swap.destination.tokenSwapValue;
+export const getEstimateValueSelector = (state: RootStateType): string | number => state.swap.estimateValue;

@@ -1,5 +1,5 @@
-import { BSC_CHAIN_ID, BSC_TEST_NET, NUMB_CHAIN_COST, NUMB_CHAIN_ID } from "@abi/constants";
-import { ITokenChainInfo, ALL_TOKEN_INFOS } from "@abi/tokenAddress";
+import { NUMB_CHAIN_COST, NUMB_CHAIN_ID } from "@abi/constants";
+import { ALL_TOKEN_INFOS, ITokenChainInfo } from "@abi/tokenAddress";
 import { get, setWith } from "lodash";
 
 export function checkExistsItemIntree(tree: any, itemKey: string | number): boolean {
@@ -36,7 +36,6 @@ export interface IChainIconInfo {
 }
 export const CHAIN_ICON_INFO: { [chainid: number]: IChainIconInfo } = {
   [NUMB_CHAIN_ID]: { iconPath: "image2vector_2.svg", name: NUMB_CHAIN_COST.chainName, chainId: NUMB_CHAIN_ID },
-  [BSC_CHAIN_ID]: { iconPath: "bsc-logo.svg", name: BSC_TEST_NET.chainName, chainId: BSC_CHAIN_ID },
 };
 
 export function getChainIconInfo(currentChainId: number): IChainIconInfo {

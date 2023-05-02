@@ -1,20 +1,10 @@
-export const numbBrigdeContractAbi = [
+export const TOKEN_SWAP_CONTRACT_ABI = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "_name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_symbol",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "_initialSupply",
-        type: "uint256",
+        internalType: "address",
+        name: "_tokenAddress",
+        type: "address",
       },
     ],
     stateMutability: "nonpayable",
@@ -69,6 +59,25 @@ export const numbBrigdeContractAbi = [
     ],
     name: "Transfer",
     type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "addLiquidity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
   },
   {
     inputs: [
@@ -177,6 +186,48 @@ export const numbBrigdeContractAbi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "inputAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "inputReserve",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "outputReserve",
+        type: "uint256",
+      },
+    ],
+    name: "getAmountOfTokens",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getReserve",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "spender",
         type: "address",
@@ -212,6 +263,43 @@ export const numbBrigdeContractAbi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_minTokens",
+        type: "uint256",
+      },
+    ],
+    name: "numbToToken",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "removeLiquidity",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "symbol",
     outputs: [
@@ -222,6 +310,37 @@ export const numbBrigdeContractAbi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokenAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_tokensSold",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_minEth",
+        type: "uint256",
+      },
+    ],
+    name: "tokenToNumb",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

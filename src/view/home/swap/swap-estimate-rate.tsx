@@ -1,10 +1,10 @@
 import { useAppSelector } from "@hooks/useReduxToolKit";
-import { getSwapSelector } from "@store/selector/swap-selectors";
+import { getEstimateValueSelector, getSwapSelector } from "@store/selector/swap-selectors";
 import { useMemo } from "react";
 
 export default function SwapEstimateRate() {
   const swapData = useAppSelector(getSwapSelector);
-
+  const estimateVal = useAppSelector(getEstimateValueSelector);
   const estimateData = useMemo(() => {
     if (swapData.destination.selectedToken && swapData.source.selectedToken) {
       return {
@@ -19,8 +19,7 @@ export default function SwapEstimateRate() {
   return (
     estimateData && (
       <div className="css-16jc9eg e1sncen30">
-        Estimated rate: {estimateData.sourceVal} {estimateData.sourceToken} = {estimateData.desVal}{" "}
-        {estimateData.desToken}
+        Estimated rate: {estimateData.sourceVal} {estimateData.sourceToken} = {estimateVal} {estimateData.desToken}
       </div>
     )
   );

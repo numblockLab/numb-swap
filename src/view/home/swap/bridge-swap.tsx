@@ -10,7 +10,8 @@ export function BridgeSwap() {
       <div className="css-1ae8i4r egmuoqj1">
         <div className="css-yu1lbc egmuoqj0">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-            <h3 className="MuiTypography-root MuiTypography-headline2 css-2wlho5">Swap</h3>
+            <h3 className="MuiTypography-root MuiTypography-headline2 css-2wlho5">Swap </h3>
+            <span style={{ fontSize: "0.75rem;" }}>0.1% Slippage Tolerance</span>
           </div>
 
           <div className="relative">
