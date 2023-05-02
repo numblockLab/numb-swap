@@ -1,8 +1,7 @@
-import { Contract, Signer } from "ethers";
+import { TOKEN_SWAP_CONTRACT_ABI } from "@abi/abi-contract";
 import { Provider } from "@ethersproject/abstract-provider";
 import { ERC20Interface } from "@usedapp/core";
-import { TOKEN_SWAP_CONTRACT_ABI } from "@abi/abi-contract";
-
+import { BigNumber, Contract, Signer, utils } from "ethers";
 /**
  * getEtherBalance: Retrieves the ether balance of the user or the contract
  */
@@ -32,14 +31,18 @@ export const getNumbBalance = async (
  * getCDTokensBalance: Retrieves the Crypto Dev tokens in the account
  * of the provided `address`
  */
-export const getCDTokensBalance = async (provider: Provider | Signer, _tokenAddress: string, address: string) => {
+export const getCDTokensBalance = async (
+  provider: Provider | Signer,
+  _tokenAddress: string,
+  address: string,
+): Promise<BigNumber> => {
   try {
     const tokenContract = new Contract(_tokenAddress, ERC20Interface, provider);
     const balanceOfCryptoDevTokens = await tokenContract.balanceOf(address);
     return balanceOfCryptoDevTokens;
   } catch (err) {
     console.error(err);
-    return 0;
+    return utils.parseEther("0");
   }
 };
 

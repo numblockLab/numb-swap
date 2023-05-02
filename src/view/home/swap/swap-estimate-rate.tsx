@@ -1,5 +1,6 @@
 import { useAppSelector } from "@hooks/useReduxToolKit";
 import { getEstimateValueSelector, getSwapSelector } from "@store/selector/swap-selectors";
+import { formatEtherFixed5 } from "@utils/text-format";
 import { useMemo } from "react";
 
 export default function SwapEstimateRate() {
@@ -19,7 +20,8 @@ export default function SwapEstimateRate() {
   return (
     estimateData && (
       <div className="css-16jc9eg e1sncen30">
-        Estimated rate: {estimateData.sourceVal} {estimateData.sourceToken} = {estimateVal} {estimateData.desToken}
+        Estimated rate: {estimateData.sourceVal} {estimateData.sourceToken} = {formatEtherFixed5(estimateVal)}{" "}
+        {estimateData.desToken}
       </div>
     )
   );

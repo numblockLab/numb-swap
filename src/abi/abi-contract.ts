@@ -1,16 +1,5 @@
 export const TOKEN_SWAP_CONTRACT_ABI = [
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_tokenAddress",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -147,6 +136,24 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_tokensSold",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_minEth",
+        type: "uint256",
+      },
+    ],
+    name: "tokenToNumb",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "decimals",
     outputs: [
@@ -181,6 +188,19 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_minTokens",
+        type: "uint256",
+      },
+    ],
+    name: "numbToToken",
+    outputs: [],
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -266,19 +286,6 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_minTokens",
-        type: "uint256",
-      },
-    ],
-    name: "numbToToken",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_amount",
         type: "uint256",
       },
@@ -314,37 +321,6 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
   },
   {
     inputs: [],
-    name: "tokenAddress",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_tokensSold",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_minEth",
-        type: "uint256",
-      },
-    ],
-    name: "tokenToNumb",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "totalSupply",
     outputs: [
       {
@@ -360,7 +336,7 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "address",
-        name: "to",
+        name: "recipient",
         type: "address",
       },
       {
@@ -384,12 +360,12 @@ export const TOKEN_SWAP_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "address",
-        name: "from",
+        name: "sender",
         type: "address",
       },
       {
         internalType: "address",
-        name: "to",
+        name: "recipient",
         type: "address",
       },
       {

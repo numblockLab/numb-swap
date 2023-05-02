@@ -3,17 +3,16 @@ import { TOKEN_SWAP_CONTRACT_ABI } from "@abi/abi-contract";
 import { Provider } from "@ethersproject/abstract-provider";
 import { formatEther } from "@ethersproject/units";
 import { ERC20Interface, Falsy, useCall, useCalls } from "@usedapp/core";
-import { Contract, Signer } from "ethers";
+import { BigNumber, Contract, Signer } from "ethers";
 
-export function useTokenBalance(swapContractAddress: string | Falsy, address: string | Falsy) {
+export function useTokenReserve(swapContractAddress: string | Falsy) {
   const { value, error } =
     useCall(
-      address &&
-        swapContractAddress && {
-          contract: new Contract(swapContractAddress, TOKEN_SWAP_CONTRACT_ABI), // instance of called contract
-          method: "getAmountOfTokens", // Method to be called
-          args: [address], // Method arguments - address to be checked for balance
-        },
+      swapContractAddress && {
+        contract: new Contract(swapContractAddress, TOKEN_SWAP_CONTRACT_ABI), // instance of called contract
+        method: "getReserve", // Method to be called
+        args: [], // Method arguments - address to be checked for balance
+      },
     ) ?? {};
   if (error) {
     console.error(error.message);
@@ -25,11 +24,11 @@ export function useTokenBalance(swapContractAddress: string | Falsy, address: st
 export function useTokenBalanceAndReserve(swapContractAddress: string | Falsy) {
   const calls = swapContractAddress
     ? [
-        {
-          contract: new Contract(swapContractAddress, TOKEN_SWAP_CONTRACT_ABI), // instance of called contract
-          method: "totalSupply", // Method to be called
-          args: [], // Method arguments - address to be checked for balance
-        },
+        // {
+        //   contract: new Contract(swapContractAddress, TOKEN_SWAP_CONTRACT_ABI), // instance of called contract
+        //   method: "balanceOf", // Method to be called
+        //   args: [swapContractAddress], // Method arguments - address to be checked for balance
+        // },
         {
           contract: new Contract(swapContractAddress, TOKEN_SWAP_CONTRACT_ABI), // instance of called contract
           method: "getReserve", // Method to be called
@@ -69,20 +68,21 @@ export const getAmountOfTokensReceivedFromSwap = async (
     const srtVal = formatEther(amountOfTokens || 0);
     return Number(srtVal).toFixed(5);
   }
-  return amountOfTokens;
+  return amountOfTokens.toString();
 };
 
 export const swapTokens = async (
   _swapContractAddress: string,
   _tokenAddress: string,
   signer: Provider | Signer,
-  swapAmountWei: { toString: () => any },
-  tokenToBeReceivedAfterSwap: string,
+  swapAmountWei: BigNumber,
+  tokenToBeReceivedAfterSwap: BigNumber,
   ethSelected: boolean,
 ) => {
   // Create a new instance of the exchange contract
   const exchangeContract = new Contract(_swapContractAddress, TOKEN_SWAP_CONTRACT_ABI, signer);
-
+  // const gas = await exchangeContract.estimateGas("numbToToken");
+  // const gasPrice = await signer.getGasPrice();
   let tx;
   // If Eth is selected call the `numbToToken` function else
   // call the `tokenToNumb` function from the contract
@@ -102,6 +102,7 @@ export const swapTokens = async (
     // send back `tokenToBeReceivedAfterSwap` amount of `Eth` to the user
     tx = await exchangeContract.tokenToNumb(swapAmountWei, tokenToBeReceivedAfterSwap);
   }
+
   await tx.wait();
   return tx;
 };

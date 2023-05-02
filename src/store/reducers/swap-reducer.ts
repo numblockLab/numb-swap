@@ -11,6 +11,7 @@ import {
 } from "../actions/swap-action";
 import { ITokenSwapMappingItem, TOKEN_SWAP_MAPPING } from "@abi/tokenAddress";
 import { find } from "lodash";
+import { formatEtherFixed5 } from "@utils/text-format";
 
 const defaultInput: ISwapSelectedValue = {
   selectedToken: null,
@@ -62,7 +63,7 @@ const swapReducer = createReducer(initialSwapState as ISwapModel, (builder) => {
   builder.addCase(switchSourceDes, (state) => {
     const tmp = { ...state.source };
     state.source = state.destination;
-    state.source.tokenSwapValue = state.estimateValue;
+    state.source.tokenSwapValue = formatEtherFixed5(state.estimateValue);
     state.estimateValue = "";
     state.destination = tmp;
     return state;

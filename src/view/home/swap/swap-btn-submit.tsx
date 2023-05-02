@@ -2,16 +2,17 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
 import { getSwapSelector } from "@store/selector/swap-selectors";
-import { useEtherBalance, useEthers } from "@usedapp/core";
+import { useEthers } from "@usedapp/core";
 import { useEffect, useState } from "react";
 
 import { NUMB_CHAIN_COST } from "@abi/index";
+import { notifyMessageError, notifyMessageSuccess } from "@emiter/AppEmitter";
+import { getCDTokensBalance } from "@hooks/getAmounts";
+import { swapTokens } from "@hooks/useSwap";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { ISelectedToken } from "@store/models/swap-model";
 import { BigNumber, Signer, utils } from "ethers";
-import { notifyMessageError } from "@emiter/AppEmitter";
-import { getCDTokensBalance } from "@hooks/getAmounts";
-import { swapTokens } from "@hooks/useSwap";
+import { putSourceTokenSwapValueAction } from "@store/actions";
 
 function BtnLoading({ title }: { title: string }) {
   return (
@@ -57,16 +58,18 @@ const swapProcess = async (
   const avaiableBalance: BigNumber = sourceDataToken.isEther
     ? await signer.getBalance()
     : await getCDTokensBalance(signer, sourceDataToken.address, accountAddress);
-  if (avaiableBalance.lt(sourceTokenValue)) {
+  if (avaiableBalance.lt(utils.parseEther(`${sourceTokenValue}`))) {
     notifyMessageError("Insufficient funds!");
     return null;
   }
+  const _tokenValue = utils.parseEther(`${sourceTokenValue}`);
+  const _estimateValue = BigNumber.from(estimateValue);
   const tx = await swapTokens(
     swapContractAddress,
     sourceDataToken.address,
     signer,
-    utils.parseEther(`${sourceTokenValue}`),
-    utils.parseEther(`${estimateValue}`).toString(),
+    _tokenValue,
+    _estimateValue,
     sourceDataToken.isEther,
   );
   return tx;
@@ -93,8 +96,12 @@ function BtnSubmitSwap(props: {
         onHandleSetBtnState(2);
         swapProcess(signer, swapContractAddress, sourceDataToken, sourceTokenValue, estimateValue)
           .then((tx) => {
-            console.log("🚀 ~ file: swap-btn-submit.tsx:97 ~ swapProcess ~ tx:", tx);
-            onHandleSetBtnState(3);
+            if (tx) {
+              notifyMessageSuccess(tx.hash);
+              dispatch(putSourceTokenSwapValueAction(""));
+            } else {
+              onHandleSetBtnState(3);
+            }
           })
           .catch((error) => {
             notifyMessageError(error.message);

@@ -23,7 +23,7 @@ export const ALL_TOKEN_INFOS: { [tokenAddress: string]: ITokenChainInfo } = {
     isEther: true,
   },
   [USDT_ADDRESS]: { address: USDT_ADDRESS, symbol: "USDT", imgUrl: "usdt-logo.svg", isEther: false },
-  [SIM_ADDRESS]: { address: SIM_ADDRESS, symbol: "FELIX", imgUrl: "pie_chart.svg", isEther: false },
+  [SIM_ADDRESS]: { address: SIM_ADDRESS, symbol: "SIM", imgUrl: "pie_chart.svg", isEther: false },
 };
 
 export interface ITokenSwapMappingItem extends ITokenChainInfo {

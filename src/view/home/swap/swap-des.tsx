@@ -4,7 +4,7 @@ import InputSelectWithIcon from "@components/InputSelectWithIcon";
 import SwapModalWrapper from "@components/SwapModalWrapper";
 import { ChainIconItem } from "@components/chain-icon/chain-icon-modal";
 import { useAppDispatch, useAppSelector } from "@hooks/useReduxToolKit";
-import { getAmountOfTokensReceivedFromSwap, useTokenBalanceAndReserve } from "@hooks/useSwap";
+import { getAmountOfTokensReceivedFromSwap, useTokenReserve } from "@hooks/useSwap";
 import { selectDesTokenAction, updateSwapAction } from "@store/actions";
 import { ISelectedToken } from "@store/models/swap-model";
 import {
@@ -13,7 +13,8 @@ import {
   getSourceTokenSelector,
   getSwapSelector,
 } from "@store/selector/swap-selectors";
-import { useEthers } from "@usedapp/core";
+import { useEtherBalance, useEthers } from "@usedapp/core";
+import { formatEtherFixed5 } from "@utils/text-format";
 import { utils } from "ethers";
 import { debounce } from "lodash";
 import { useEffect, useMemo, useState } from "react";
@@ -102,7 +103,7 @@ function InputDesEstimate(props: {
         params.ethSelected,
         params.ethBalance,
         params.reservedCD,
-        true,
+        false,
       );
       dispatch(
         updateSwapAction({
@@ -142,30 +143,31 @@ function InputDesEstimate(props: {
       className="sm:text-left text-right ec4inb72 css-1aao2o7 e15splxn0"
       placeholder="0.00"
       disabled
-      value={estimateVal}
+      value={formatEtherFixed5(estimateVal)}
     />
   );
 }
 
 export default function SwapDes() {
   const swapData = useAppSelector(getSwapSelector);
-  const balanceAndReserve = useTokenBalanceAndReserve(swapData.swapContractAddress);
+  const tokenReserve = useTokenReserve(swapData.swapContractAddress);
+  const numbContractBal = useEtherBalance(swapData.swapContractAddress);
   const [state, setState] = useState({
     bal: "0",
     rev: "0",
   });
   useEffect(() => {
-    if (balanceAndReserve) {
-      const [balance, reserve] = balanceAndReserve;
-      if (balance && reserve) {
-        const balStr = balance.toString();
+    if (tokenReserve) {
+      const reserve = tokenReserve;
+      if (numbContractBal && reserve) {
+        const balStr = numbContractBal.toString();
         const revStr = reserve.toString();
         if (balStr !== state.bal && revStr !== state.rev) {
           setState({ bal: balStr, rev: revStr });
         }
       }
     }
-  }, [balanceAndReserve, state]);
+  }, [numbContractBal, state, tokenReserve]);
 
   // useEffect(() => {
   //   console.log("🚀 ~ file: swap-des.tsx:89 ~ SwapDes ~ state:", state);
