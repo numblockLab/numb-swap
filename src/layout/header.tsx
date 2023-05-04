@@ -1,5 +1,6 @@
 import { NUMB_FAUCET_LINK } from "@abi/constants";
 import ConnectWalletContainer from "./ConnectWalletContainer";
+import { Link } from "react-router-dom";
 /* eslint-disable jsx-a11y/no-redundant-roles */
 export default function Header() {
   const goFaucet = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -16,13 +17,28 @@ export default function Header() {
       <div className="MuiContainer-root MuiContainer-maxWidthXl css-1ekb41w">
         <div className="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-8g4gfm">
           <div className="flex lg:gap-6 items-center grow">
-            <a role="link" tabIndex={0} href="/" className="">
+            <Link role="link" tabIndex={0} to="/" className="">
               <img
                 className="xs:h-[30px] md:h-[36px] 2xl:h-[56px]"
                 src="/static/img/logos/numblock_logo.png"
                 alt="NumBlock"
               />
-            </a>
+            </Link>
+
+            <div className=" lg:flex gap-1">
+              <div className="px-3 flex items-center">
+                <Link className="css-o3dwbz e1v5pgbr0 btn-header" to="/">
+                  Swap
+                </Link>
+              </div>
+            </div>
+            <div className=" lg:flex gap-1">
+              <div className="px-3 flex items-center">
+                <Link className="css-o3dwbz e1v5pgbr0 btn-header" to="/pools">
+                  Pools
+                </Link>
+              </div>
+            </div>
             <div className=" lg:flex gap-1">
               <div className="px-3 flex items-center">
                 <button className="css-o3dwbz e1v5pgbr0 btn-header" type="button" onClick={(e) => goFaucet(e)}>

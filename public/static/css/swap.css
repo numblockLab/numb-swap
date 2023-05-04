@@ -33,6 +33,9 @@
     padding-top: 96px;
     padding-bottom: 96px;
   }
+  .w-1\/3 {
+    width: 33.333333%;
+  }
 }
 .css-16m5k0g {
   background-color: #000000;
@@ -93,6 +96,9 @@
 @media (max-width: 899.95px) {
   .css-16m5k0g .MuiContainer-root {
     padding: 16px;
+  }
+  .w-1\/3 {
+    width: 100%;
   }
 }
 .css-1ekb41w {
@@ -1848,4 +1854,15 @@ body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+.text-gray-500 {
+  color: #6c86ad;
+}
+.w-50 {
+  width: 50%;
+}
+.pool-info {
+  padding: 16px;
+  margin-bottom: 16px;
 }
