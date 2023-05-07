@@ -56,3 +56,22 @@ export const TOKEN_SWAP_MAPPING: {
     },
   ],
 };
+
+export interface ILiquidItem {
+  source: ITokenChainInfo;
+  des: ITokenChainInfo;
+  swapContract: string;
+}
+
+export const LIQUIDITY_LIST: ILiquidItem[] = [
+  {
+    source: ALL_TOKEN_INFOS[NUMB_ADDRESS],
+    des: ALL_TOKEN_INFOS[USDT_ADDRESS],
+    swapContract: USDT_SWAP_ADDRESS,
+  },
+  {
+    source: ALL_TOKEN_INFOS[NUMB_ADDRESS],
+    des: ALL_TOKEN_INFOS[SIM_ADDRESS],
+    swapContract: SIM_SWAP_ADDRESS,
+  },
+];

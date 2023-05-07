@@ -2,13 +2,15 @@
 import React from "react";
 import DefaultLayout from "../../layout";
 import PoolCard from "./pool-card";
+import { LIQUIDITY_LIST } from "@abi/tokenAddress";
 
 export default function PoolsView() {
   return (
     <DefaultLayout>
-      <div className="flex justify-start gap-2">
-        <PoolCard />
-        <PoolCard />
+      <div className="pool-view md:flex md:gap-2 md:justify-start ">
+        {LIQUIDITY_LIST.map((e) => (
+          <PoolCard item={e} key={e.swapContract} />
+        ))}
       </div>
     </DefaultLayout>
   );
