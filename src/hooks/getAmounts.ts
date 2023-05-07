@@ -23,7 +23,7 @@ export const getNumbBalance = async (
     return balance;
   } catch (err) {
     console.error(err);
-    return 0;
+    return utils.parseEther("0");
   }
 };
 
@@ -53,15 +53,18 @@ export const getCDTokensBalance = async (
 export const getLPTokensBalance = async (
   provider: Provider | Signer,
   _swapContractAddress: string,
-  address: string,
+  address: string | null | undefined,
 ) => {
   try {
-    const exchangeContract = new Contract(_swapContractAddress, ERC20Interface, provider);
-    const balanceOfLPTokens = await exchangeContract.balanceOf(address);
-    return balanceOfLPTokens;
+    if (address) {
+      const exchangeContract = new Contract(_swapContractAddress, ERC20Interface, provider);
+      const balanceOfLPTokens = await exchangeContract.balanceOf(address);
+      return balanceOfLPTokens;
+    }
+    return utils.parseEther("0");
   } catch (err) {
     console.error(err);
-    return 0;
+    return utils.parseEther("0");
   }
 };
 
@@ -76,6 +79,6 @@ export const getReserveOfCDTokens = async (provider: Provider | Signer, _swapCon
     return reserve;
   } catch (err) {
     console.error(err);
-    return 0;
+    return utils.parseEther("0");
   }
 };

@@ -3,7 +3,7 @@ import { NumericFormat } from "react-number-format";
 const defaultDecimalPlaces = 0;
 
 export default function MoneyComponent(props: {
-  numValue: number;
+  numValue: number | string;
   decimalPlaces?: number;
   className?: string;
 }): JSX.Element {

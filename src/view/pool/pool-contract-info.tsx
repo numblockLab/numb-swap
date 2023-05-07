@@ -1,5 +1,6 @@
 import { NUMB_CHAIN_COST } from "@abi/constants";
 import { ILiquidItem } from "@abi/tokenAddress";
+import { formatShortTx } from "@utils/text-format";
 import { Link } from "react-router-dom";
 
 export default function PoolContractInfo(props: { item: ILiquidItem }) {
@@ -17,9 +18,9 @@ export default function PoolContractInfo(props: { item: ILiquidItem }) {
         <Link
           target="_blank"
           className="fs-12 pools-table_current-color ng-star-inserted"
-          to={NUMB_CHAIN_COST.getExplorerAddressLink("0x1f629794b34ffb3b29ff206be5478a52678b47ae")}
+          to={NUMB_CHAIN_COST.getExplorerAddressLink(item.swapContract)}
         >
-          0x1f62...47ae
+          {formatShortTx(item.swapContract)}
         </Link>
       </div>
 
