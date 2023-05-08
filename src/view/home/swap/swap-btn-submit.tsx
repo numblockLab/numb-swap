@@ -9,25 +9,10 @@ import { NUMB_CHAIN_COST } from "@abi/index";
 import { notifyMessageError, notifyMessageSuccess } from "@emiter/AppEmitter";
 import { getCDTokensBalance } from "@hooks/getAmounts";
 import { swapTokens } from "@hooks/useSwap";
-import LoadingButton from "@mui/lab/LoadingButton";
+import { putSourceTokenSwapValueAction } from "@store/actions";
 import { ISelectedToken } from "@store/models/swap-model";
 import { BigNumber, Signer, utils } from "ethers";
-import { putSourceTokenSwapValueAction } from "@store/actions";
-
-function BtnLoading({ title }: { title: string }) {
-  return (
-    <LoadingButton
-      // color="primary"
-      loading
-      loadingPosition="center"
-      // loadingIndicator={title}
-      variant="outlined"
-      fullWidth
-    >
-      {title}
-    </LoadingButton>
-  );
-}
+import { BtnLoading } from "@components/Btn-Loading";
 
 function BtnSubmitDisable({ title }: { title: string }) {
   return (

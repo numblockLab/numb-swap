@@ -15,17 +15,34 @@ export default function PoolCard(props: { item: ILiquidItem }) {
   const [state, setState] = useState({
     poolNumb: "",
     poolToken: "",
-    myPoolLP: "",
   });
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [myLB, setMyLB] = useState("");
   useEffect(() => {
     const getPoolNumb = getNumbBalance(library as any, item.swapContract, "", true);
     const getPoolToken = getCDTokensBalance(library as any, item.des.address, item.swapContract);
-    const getMyLP = getLPTokensBalance(library as any, item.swapContract, account);
-    Promise.all([getPoolNumb, getPoolToken, getMyLP]).then((result) => {
-      const [numbbal, tokenbal, mylp] = result;
-      setState({ poolNumb: numbbal.toString(), poolToken: tokenbal.toString(), myPoolLP: mylp.toString() });
+
+    Promise.all([getPoolNumb, getPoolToken]).then((result) => {
+      const [numbbal, tokenbal] = result;
+      setState({ poolNumb: numbbal.toString(), poolToken: tokenbal.toString() });
     });
-  }, [account, item.des.address, item.swapContract, library]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.des.address, item.swapContract, refreshCount]);
+  useEffect(() => {
+    if (account) {
+      // const getMyLP = getLPTokensBalance(library as any, item.swapContract, account);
+      getLPTokensBalance(library as any, item.swapContract, account).then((mylp) => setMyLB(mylp.toString()));
+    }
+    return () => {
+      setMyLB("");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, item.swapContract, refreshCount]);
+
+  const emitRefresh = () => {
+    setRefreshCount(refreshCount + 1);
+  };
+
   return (
     <div className=" w-1/3 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <PoolContractInfo item={item} />
@@ -46,7 +63,7 @@ export default function PoolCard(props: { item: ILiquidItem }) {
         <div className="mb-2 flex justify-between">
           <span className="text-gray-500"> - My LP</span>
           <span>
-            <MoneyComponent numValue={formatEtherFixed5(state.myPoolLP)} decimalPlaces={3} />
+            <MoneyComponent numValue={formatEtherFixed5(myLB)} decimalPlaces={3} />
           </span>
         </div>
       </div>
@@ -54,7 +71,7 @@ export default function PoolCard(props: { item: ILiquidItem }) {
         <Button variant="outlined" color="info" className="w-50">
           Remove
         </Button>
-        <BtnProvide item={item} />
+        <BtnProvide item={item} poolNumb={state.poolNumb} poolToken={state.poolToken} emitRefresh={emitRefresh} />
       </div>
     </div>
   );
