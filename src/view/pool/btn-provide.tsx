@@ -93,7 +93,7 @@ export default function BtnProvide(props: {
             </p>
           </div>
           <TextField
-            label="NUMB value"
+            label="Amount of NUMB"
             type="number"
             InputLabelProps={{
               shrink: true,

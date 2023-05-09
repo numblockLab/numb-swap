@@ -87,7 +87,7 @@ function InputDesEstimate(props: {
   const dispatch = useAppDispatch();
   const { library } = useEthers();
   const estimateVal = useAppSelector(getEstimateValueSelector);
-  const debouncedSearch = debounce(
+  const debouncedGetAmt = debounce(
     async (params: {
       _swapContractAddress: string;
       _swapAmountWei: string;
@@ -124,7 +124,7 @@ function InputDesEstimate(props: {
         ethBalance: contractBal,
         reservedCD: contractRev,
       };
-      debouncedSearch(params)?.then();
+      debouncedGetAmt(params)?.then();
     } else {
       dispatch(
         updateSwapAction({
@@ -133,7 +133,7 @@ function InputDesEstimate(props: {
       );
     }
     return () => {
-      debouncedSearch.cancel();
+      debouncedGetAmt.cancel();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractBal, contractRev, sourceSelectedToken.isEther, swapContractAddress, tokenSwapValue]);

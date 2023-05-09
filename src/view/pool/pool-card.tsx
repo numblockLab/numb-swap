@@ -1,13 +1,13 @@
-import { Button } from "@mui/material";
-import BtnProvide from "./btn-provide";
 import { ILiquidItem } from "@abi/tokenAddress";
+import BtnProvide from "./btn-provide";
 
-import PoolContractInfo from "./pool-contract-info";
 import MoneyComponent from "@components/MoneyComponent";
-import { useEffect, useState } from "react";
 import { getCDTokensBalance, getLPTokensBalance, getNumbBalance } from "@hooks/getAmounts";
 import { useEthers } from "@usedapp/core";
 import { formatEtherFixed5 } from "@utils/text-format";
+import { useEffect, useState } from "react";
+import BtnRemove from "./btn-remove";
+import PoolContractInfo from "./pool-contract-info";
 
 export default function PoolCard(props: { item: ILiquidItem }) {
   const { item } = props;
@@ -68,9 +68,7 @@ export default function PoolCard(props: { item: ILiquidItem }) {
         </div>
       </div>
       <div className="pool-actions flex justify-between gap-2">
-        <Button variant="outlined" color="info" className="w-50">
-          Remove
-        </Button>
+        <BtnRemove item={item} emitRefresh={emitRefresh} />
         <BtnProvide item={item} poolNumb={state.poolNumb} poolToken={state.poolToken} emitRefresh={emitRefresh} />
       </div>
     </div>
